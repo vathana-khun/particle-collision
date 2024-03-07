@@ -1,0 +1,86 @@
+[33mcommit 7d59aeb54e8839b13ea79c33aa89eafd4d227988[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: vking0 <khunvathana2@gmail.com>
+Date:   Thu Mar 7 01:47:04 2024 +1100
+
+    2
+
+[1mdiff --git a/Particle_Generation.pde b/Particle_Generation.pde[m
+[1mdeleted file mode 100644[m
+[1mindex a366258..0000000[m
+[1m--- a/Particle_Generation.pde[m
+[1m+++ /dev/null[m
+[36m@@ -1,74 +0,0 @@[m
+[31m-ArrayList<balls> particle = new ArrayList<balls>(); // ArrayList to hold the particle[m
+[31m-float rectWidth = 500;[m
+[31m-float rectHeight = 400;[m
+[31m-PVector rectTopLeft;[m
+[31m-PVector rectBottomRight;[m
+[31m-void setup() {[m
+[31m-  size(800, 800);[m
+[31m-  int NumberOfBalls = 10;[m
+[31m-  int diameter = 20;[m
+[31m-  int maxSpeed = 1;[m
+[31m-  int minSpeed = 2;[m
+[31m-  float voloumn = rectWidth * rectHeight;[m
+[31m-  rectTopLeft =  new PVector(width/2 - rectWidth/2, height/2-rectHeight/2);[m
+[31m-  rectBottomRight = new PVector(rectTopLeft.x + rectWidth, rectTopLeft.y + rectHeight);[m
+[31m-  CreateBalls(NumberOfBalls, diameter, maxSpeed , minSpeed); // Create the particle[m
+[31m-}[m
+[31m-[m
+[31m-void draw() {[m
+[31m-  background(255);[m
+[31m-  rectMode(CORNER);[m
+[31m-  rect(rectTopLeft.x, rectTopLeft.y, rectWidth, rectHeight);[m
+[31m-  for (balls b : particle) { // Loop Through the particle in the arrays[m
+[31m-    b.update();[m
+[31m-    b.display();[m
+[31m-  }[m
+[31m-}[m
+[31m-[m
+[31m-// Create a class that make an Object Called Balls[m
+[31m-class balls {[m
+[31m-  float diameter;[m
+[31m-  PVector location;[m
+[31m-  PVector velocity;[m
+[31m-  // Required the radius or Mass, location and Speed[m
+[31m-  balls (float d, float x, float y, float xspeed, float yspeed ) {[m
+[31m-    diameter = d;[m
+[31m-    location =new PVector (x, y);[m
+[31m-    velocity =new PVector (xspeed, yspeed);[m
+[31m-  }[m
+[31m-  //Create the Obeject[m
+[31m-  void display() {[m
+[31m-    ellipse(location.x, location.y, diameter, diameter);[m
+[31m-  }[m
+[31m-  // update to make objected move[m
+[31m-  void update() {[m
+[31m-    location.add(velocity);[m
+[31m-    // Wall Collision[m
+[31m-    if (location.x < rectTopLeft.x || location.x > rectTopLeft.x+rectWidth){[m
+[31m-      velocity.x *= -1;[m
+[31m-    }[m
+[31m-     if (location.y < rectTopLeft.y || location.y > rectTopLeft.y+rectHeight){[m
+[31m-      velocity.y *= -1;[m
+[31m-    }[m
+[31m-      //the point is inside the rectangle[m
+[31m-    }[m
+[31m-  }[m
+[31m-[m
+[31m-[m
+[31m-//Create a Function that Create a certain amount of Balls[m
+[31m-void CreateBalls(float num, float diameter, float minSpeed, float maxSpeed) {[m
+[31m-  for (int i = 0; i < num; i++) {[m
+[31m-    float x = random(rectTopLeft.x, rectBottomRight.x);[m
+[31m-    float y = random(rectTopLeft.y, rectBottomRight.y);[m
+[31m-    float xspeed = random(maxSpeed, minSpeed)*randomSign();[m
+[31m-    float yspeed = random(maxSpeed, minSpeed)*randomSign();[m
+[31m-    balls b = new balls(diameter, x, y, xspeed, yspeed);[m
+[31m-    particle.add(b);[m
+[31m-  }[m
+[31m-}[m
+[31m-int randomSign() {[m
+[31m-  return (random(1) < 0.5) ? -1 : 1;[m
+[31m-}[m
+[31m-//https://happycoding.io/tutorials/processing/collision-detection#rectangle-point-collision collision techniques [m
+[31m-//using processing documentation to learn PVector and class[m
+[31m-//[m

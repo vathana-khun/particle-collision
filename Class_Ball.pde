@@ -31,9 +31,57 @@ class Balls {
       location.y = rectTopLeft  .y+rectHeight- radius;
       velocity.y *= -1;
     }
-    //the point is inside the rectangle
+  }
+  void checkCollision(Balls other) {
+    // primitive collision checker
+    // find the distance between the current particle and the other
+    PVector disVect = PVector.sub(other.location, location);
+    float disVectMag = disVect.mag();
+    float minDist = radius + other.radius;
+    //Collision Detected:
+
+    if (disVectMag < minDist) {
+      float distanceCorrection = (minDist - disVectMag)/2.0;
+      PVector n = disVect.copy();
+      // Create the normal unit vector of Length 1
+      PVector unitNormal = n.normalize().mult(distanceCorrection);
+      PVector tangent = new PVector(-1*unitNormal.x, unitNormal.y);
+
+      float velocityNormal = velocity.dot(unitNormal);
+      float velocityTangent = velocity.dot(tangent);
+      float velocityOtherNormal = other.velocity.dot(unitNormal);
+      float velocityOtherTangent =  other.velocity.dot(tangent);
+      //float velocityfinal = velocityTangent;
+      //float velocityfinalOther = velocityOtherTagnent;
+      //float velocityfinalNormal = ((velocityNormal*(m - m.other)) + (2*m.other*velocityOtherNormal))/(m+m.other);
+      //float velocityfinalOther = ((velocityOtherNormal*(m.other - m)) + (2*m*velocityNormal))/(m+m.other);
+      PVector tempv1 = unitNormal.copy();
+      PVector tempv2 = unitNormal.copy();
+
+      PVector velocityFinalNormal = tempv1.mult(((velocityNormal*(m - other.m)) + (2*other.m*velocityOtherNormal))/(m+other.m));
+      PVector velocityFinalNormalOther = tempv2.mult(((velocityOtherNormal*(other.m - m)) + (2*m*velocityNormal))/(m+other.m));
+
+      PVector tempT1 = tangent.copy();
+      PVector tempT2 = tangent.copy();
+
+      PVector velocityFinalTangent = tempT1.mult(velocityTangent);
+      PVector velocityFinalTagentOther = tempT2.mult(velocityOtherTangent);
+
+      PVector velocityFinal = velocityFinalNormal.add(velocityFinalTangent);
+      PVector velocityFinalOther = velocityFinalNormalOther.add(velocityFinalTagentOther);
+      // After calculating velocities
+      println("Velocity Final Normal: " + velocityFinalNormal);
+      println("Velocity Final Normal Other: " + velocityFinalNormalOther);
+      println("Velocity Final Tangent: " + velocityFinalTangent);
+      println("Velocity Final Tangent Other: " + velocityFinalTagentOther);
+
+      //update the location or position with the new velocity
+      velocity = velocityFinal;
+      other.velocity = velocityFinalOther;
+    }
   }
 }
+
 
 
 //Create a Function that Create a certain amount of Balls
@@ -50,6 +98,3 @@ void CreateBalls(float num, float radius, float minSpeed, float maxSpeed) {
 int randomSign() {
   return (random(1) < 0.5) ? -1 : 1;
 }
-//https://happycoding.io/tutorials/processing/collision-detection#rectangle-point-collision collision techniques
-//using processing documentation to learn PVector and class
-//https://processing.org/examples/circlecollision.html

@@ -12,12 +12,12 @@ class Balls {
   }
   //Create the Obeject
   void display() {
-    fill(velocity.x*100,0,255-velocity.x*100);
+    fill(velocity.x*100, 0, 255-velocity.x*100);
     ellipse(location.x, location.y, radius*2, radius*2);
   }
   // update to make objected move
   void update() {
-    
+
     location.add(velocity);
     // Wall Collision
     if (location.x < rectTopLeft .x + radius ) {
@@ -81,7 +81,8 @@ class Balls {
 
 
 //Create a Function that Create a certain amount of Balls
-void CreateBalls(float num, float radius, float minSpeed, float maxSpeed) {
+void CreateBalls(float num, float radius, float minSpeed, float maxSpeed){
+  if (num <= 0) return; // Avoid division by zero or negative num
   int rows = ceil(sqrt(num));
   int cols = ceil(num / rows);
   float spacingX = (rectBottomRight.x - rectTopLeft.x) / cols;
@@ -100,6 +101,24 @@ void CreateBalls(float num, float radius, float minSpeed, float maxSpeed) {
     }
   }
 }
+void IncreasingBalls(Boolean Yes) {
+  if (Yes  == true) {
+    float x = random(rectTopLeft .x + radius, rectBottomRight.x - radius);
+    float y = random(rectTopLeft.y + radius, rectBottomRight.y -  radius);
+    float xspeed = random(maxSpeed, minSpeed)*randomSign();
+    float yspeed = random(maxSpeed, minSpeed)*randomSign();
+    Balls b = new Balls(radius*2, x, y, xspeed, yspeed);
+    particle.add(b);
+  }
+}
+void mouseCreating(float radiusmouse){
+    float x = mouseX;
+    float y = mouseY;
+    float xspeed = random(maxSpeed, minSpeed)*randomSign();
+    float yspeed = random(maxSpeed, minSpeed)*randomSign();
+    Balls b = new Balls(radiusmouse*2, x, y, xspeed, yspeed);
+    particle.add(b);
+  }
 int randomSign() {
   return (random(1) < 0.5) ? -1 : 1;
 }

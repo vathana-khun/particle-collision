@@ -1,6 +1,8 @@
 ### Porject Description
 I'm trying to build a particle collision simulator to learn more about computer graphics. 
 
+Download the file and open the Particle_Generation.pde it should contain everything there.
+
 Some resources that I have found helpful:
 <ul>
   <li>Collision Detection: https://happycoding.io/tutorials/processing/collision-detection#rectangle-point-collision</li>

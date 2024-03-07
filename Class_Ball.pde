@@ -8,14 +8,16 @@ class Balls {
     radius = r;
     location =new PVector (x, y);
     velocity =new PVector (xspeed, yspeed);
-    m = radius*.1;
+    m = radius*0.1;
   }
   //Create the Obeject
   void display() {
+    fill(velocity.x*100,0,255-velocity.x*100);
     ellipse(location.x, location.y, radius*2, radius*2);
   }
   // update to make objected move
   void update() {
+    
     location.add(velocity);
     // Wall Collision
     if (location.x < rectTopLeft .x + radius ) {
@@ -41,20 +43,17 @@ class Balls {
     //Collision Detected:
 
     if (disVectMag < minDist) {
-      float distanceCorrection = (minDist - disVectMag)/2.0;
+
       PVector n = disVect.copy();
       // Create the normal unit vector of Length 1
-      PVector unitNormal = n.normalize().mult(distanceCorrection);
-      PVector tangent = new PVector(-1*unitNormal.x, unitNormal.y);
+      PVector unitNormal = n.normalize();
+      PVector tangent = new PVector(-1*unitNormal.y, unitNormal.x);
 
       float velocityNormal = velocity.dot(unitNormal);
       float velocityTangent = velocity.dot(tangent);
       float velocityOtherNormal = other.velocity.dot(unitNormal);
       float velocityOtherTangent =  other.velocity.dot(tangent);
-      //float velocityfinal = velocityTangent;
-      //float velocityfinalOther = velocityOtherTagnent;
-      //float velocityfinalNormal = ((velocityNormal*(m - m.other)) + (2*m.other*velocityOtherNormal))/(m+m.other);
-      //float velocityfinalOther = ((velocityOtherNormal*(m.other - m)) + (2*m*velocityNormal))/(m+m.other);
+
       PVector tempv1 = unitNormal.copy();
       PVector tempv2 = unitNormal.copy();
 
@@ -69,11 +68,8 @@ class Balls {
 
       PVector velocityFinal = velocityFinalNormal.add(velocityFinalTangent);
       PVector velocityFinalOther = velocityFinalNormalOther.add(velocityFinalTagentOther);
-      // After calculating velocities
-      println("Velocity Final Normal: " + velocityFinalNormal);
-      println("Velocity Final Normal Other: " + velocityFinalNormalOther);
-      println("Velocity Final Tangent: " + velocityFinalTangent);
-      println("Velocity Final Tangent Other: " + velocityFinalTagentOther);
+
+
 
       //update the location or position with the new velocity
       velocity = velocityFinal;
@@ -86,13 +82,22 @@ class Balls {
 
 //Create a Function that Create a certain amount of Balls
 void CreateBalls(float num, float radius, float minSpeed, float maxSpeed) {
-  for (int i = 0; i < num; i++) {
-    float x = random(rectTopLeft .x + radius, rectBottomRight.x - radius);
-    float y = random(rectTopLeft.y + radius, rectBottomRight.y -  radius);
-    float xspeed = random(maxSpeed, minSpeed)*randomSign();
-    float yspeed = random(maxSpeed, minSpeed)*randomSign();
-    Balls b = new Balls(radius*2, x, y, xspeed, yspeed);
-    particle.add(b);
+  int rows = ceil(sqrt(num));
+  int cols = ceil(num / rows);
+  float spacingX = (rectBottomRight.x - rectTopLeft.x) / cols;
+  float spacingY = (rectBottomRight.y - rectTopLeft.y) / rows;
+
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j <cols; j++) {
+      //float x = random(rectTopLeft .x + radius, rectBottomRight.x - radius);
+      //float y = random(rectTopLeft.y + radius, rectBottomRight.y -  radius);
+      float x = rectTopLeft.x + (j* spacingX)+ radius;
+      float y = rectTopLeft.y + (i * spacingY) + radius;
+      float xspeed = random(maxSpeed, minSpeed)*randomSign();
+      float yspeed = random(maxSpeed, minSpeed)*randomSign();
+      Balls b = new Balls(radius*2, x, y, xspeed, yspeed);
+      particle.add(b);
+    }
   }
 }
 int randomSign() {

@@ -5,9 +5,9 @@ PVector rectTopLeft;
 PVector rectBottomRight;
 float frame = 1;
 float rate;
-int radius = 5;
-float maxSpeed = 1;
-float minSpeed = 2;
+int radius = 10;
+float maxSpeed = 2;
+float minSpeed = 1;
 int NumberOfBalls = 1;
 float radiusmouse;
 void setup() {
@@ -27,7 +27,7 @@ void draw() {
   background(255);
   noFill();
   rectMode(CORNER);
-  IncreasingBalls(true);
+  IncreasingBalls(false);
   rect(rectTopLeft.x, rectTopLeft.y, rectWidth, rectHeight);
   for (int i = 0; i < particle.size(); i++) {
     Balls p = particle.get(i);
@@ -49,13 +49,15 @@ void draw() {
   text(particle.size(), 10, 20);
   text(radiusmouse, 10, 30);
 }
+
+
 void keyPressed() {
   if ((key == 's') || (key == 'S')) {
     radiusmouse -= 5;
   }
   if ((key == 'W') || (key == 'w')) {
     radiusmouse += 5;
-  }
+  } 
 }
 void mousePressed() {
   if (mousePressed && (mouseButton == LEFT)) {
@@ -75,4 +77,40 @@ void mousePressed() {
       }
     }
   }
+}
+boolean isDragging = false; // Variable to track if a particle is being dragged
+int draggingIndex = -1; // Index of the particle being dragged
+
+void mouseDragged() {
+  if (!isDragging) {
+    // Loop through all particles to check if the mouse is inside any particle
+    for (int i = particle.size()-1; i >= 0; i--) {
+      Balls b = particle.get(i);
+      // Calculate distance between mouse and particle center
+      float distance = dist(mouseX, mouseY, b.location.x, b.location.y);
+      // If mouse is inside the particle, start dragging it
+      if (distance <= b.radius) {
+        isDragging = true;
+        draggingIndex = i;
+        break; // No need to check other particles
+      }
+    }
+  } else {
+    // Update the location of the dragged particle
+    Balls b = particle.get(draggingIndex);
+    float deltaX = mouseX - b.location.x;
+    float deltaY = mouseY - b.location.y;
+    b.location.x = mouseX;
+    b.location.y = mouseY;
+
+    b.velocity.x += deltaX * 0.5; // Adjust the factor as needed
+    b.velocity.y += deltaY * 0.5; // Adjust the factor as needed
+    b.update(); // Update the particle's display
+  }
+}
+
+void mouseReleased() {
+  // Reset dragging state when the mouse is released
+  isDragging = false;
+  draggingIndex = -1;
 }

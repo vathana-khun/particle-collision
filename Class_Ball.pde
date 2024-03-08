@@ -3,6 +3,9 @@ class Balls {
   float radius, m;
   PVector location;
   PVector velocity;
+  float collisionDamping = colDamp;
+  float gravity = g;
+  
   // Required the radius or Mass, location and Speed
   Balls (float r, float x, float y, float xspeed, float yspeed ) {
     radius = r;
@@ -19,29 +22,32 @@ class Balls {
     //fill(0, 0, 255);
     //}
     int factor = 20;
-    fill(velocity.mag()*factor, velocity.mag()*factor/4, 200-velocity.mag()*2*factor);
+    fill(velocity.mag()*factor, velocity.mag()*factor/2, 200-velocity.mag()*factor);
     ellipse(location.x, location.y, radius*2, radius*2);
   }
   // update to make objected move
   void update() {
-
+    velocity.y += gravity;
     location.add(velocity);
     // Wall Collision
     if (location.x < rectTopLeft .x + radius ) {
       location.x = rectTopLeft .x + radius;
-      velocity.x *= -1;
+      velocity.x = velocity.x * -1 * collisionDamping;
     } else if  (location.x > rectTopLeft.x+rectWidth - radius) {
       location.x = rectTopLeft.x+rectWidth - radius;
-      velocity.x *= -1;
+      velocity.x *= -1* collisionDamping;
     } else if (location.y < rectTopLeft.y + radius) {
       location.y = rectTopLeft.y + radius;
-      velocity.y *= -1;
+      velocity.y *= -1*collisionDamping;
     } else if (location.y > rectTopLeft  .y+rectHeight- radius) {
       location.y = rectTopLeft  .y+rectHeight- radius;
-      velocity.y *= -1;
+      velocity.y *= -1*collisionDamping;
     }
   }
-  void checkCollision(Balls other) {
+  void checkCollision(Balls other){ 
+    solveCollision(other);
+  }
+  void solveCollision(Balls other) {
     // primitive collision checker
     // find the distance between the current particle and the other , x2-x1
     PVector disVect = PVector.sub(other.location, location);
@@ -83,6 +89,7 @@ class Balls {
       //update the location or position with the new velocity
       velocity = velocityFinal;
       other.velocity = velocityFinalOther;
+      velocity.mult(collisionDamping);
     }
   }
 }
@@ -120,24 +127,26 @@ void CreateBalls(float num, float radius, float minSpeed, float maxSpeed, boolea
     }
   }
 }
+
 void IncreasingBalls(Boolean Yes) {
   if (Yes  == true) {
-    float x = random(rectTopLeft .x + radius, rectBottomRight.x - radius);
-    float y = random(rectTopLeft.y + radius, rectBottomRight.y -  radius);
+    float x = random(0, rectTopLeft.x );
+    float y = random(rectTopLeft.y, rectTopLeft.y+radius);
     float xspeed = random(maxSpeed, minSpeed)*randomSign();
     float yspeed = random(maxSpeed, minSpeed)*randomSign();
     Balls b = new Balls(radius*2, x, y, xspeed, yspeed);
     particle.add(b);
   }
 }
-void mouseCreating(float radiusmouse) {
+void mouseCreating(float radiusmouse, float speedmouse) {
   if (radiusmouse > 0) {
     float x = mouseX;
     float y = mouseY;
-    float xspeed = random(maxSpeed, minSpeed)*randomSign();
-    float yspeed = random(maxSpeed, minSpeed)*randomSign();
-    Balls b = new Balls(radiusmouse*2, x, y, xspeed, yspeed);
+    float xspeed = (random(maxSpeed, minSpeed)+speedmouse)*randomSign() ;
+    float yspeed = (random(maxSpeed, minSpeed)+speedmouse)*randomSign();
+    Balls b = new Balls(radiusmouse, x, y, xspeed, yspeed);
     particle.add(b);
+    b.display();
   }
 }
 int randomSign() {

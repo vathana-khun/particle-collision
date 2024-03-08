@@ -1,39 +1,49 @@
 ArrayList<Balls> particle = new ArrayList<Balls>(); // ArrayList to hold the particle
-float rectWidth = 1300;
-float rectHeight = 800;
-PVector rectTopLeft;
-PVector rectBottomRight;
-float frame = 1;
-float rate;
-float radius = 5;
-float maxSpeed = 1;
-float minSpeed = 1;
-int NumberOfBalls = 500;
-float radiusmouse;
+PVector rectTopLeft, rectBottomRight;
+float rectWidth, rectHeight, frame, rate, radius, minSpeed, maxSpeed, radiusmouse,speedmouse, g, colDamp;
+int NumberOfBalls;
+boolean difMass, increaseB, runDraw;
+
 void setup() {
   size(1500, 1000);
+  //Create the Size of the BOX
+  rectWidth = 1300;
+  rectHeight = 800;
   frameRate(60);
-  //float voloumn = rectWidth * rectHeight;
+  radius = 5;
+  maxSpeed = 1;
+  minSpeed = 0.5;
+  NumberOfBalls = 500;
+  g = 0; //gravity
+  colDamp = 1; //Collision Damping factor [0,1]
+  difMass = true; //Different mass for each particle being generated
+  increaseB = false; //Increase the amount of particle over time.
+  //Rectangle Cordinate
   rectTopLeft =  new PVector(width/2 - rectWidth/2, height/2-rectHeight/2);
   rectBottomRight = new PVector(rectTopLeft.x + rectWidth, rectTopLeft.y + rectHeight);
-  CreateBalls(NumberOfBalls, radius, maxSpeed, minSpeed,false);
-  // Create the particle
-  //Balls b2 = new Balls(20,width/2+ rectWidth - radius, height/2, -12, 0);
-  //particle.add(b2);
+  //Created the particle itself
+  CreateBalls(NumberOfBalls, radius, maxSpeed, minSpeed, difMass);
+  frame = 1;
+  runDraw = true;
+  radiusmouse = 5;
+  speedmouse = 0;
 }
 
 void draw() {
-
   background(255);
   noFill();
-  rectMode(CORNER);
-  IncreasingBalls(false);
+  IncreasingBalls(increaseB); // a function that increase the amount of particle over time.
   rect(rectTopLeft.x, rectTopLeft.y, rectWidth, rectHeight);
+  if (editMode == true) {
+    circle(mouseX, mouseY, radiusmouse*2);
+  }
+
   for (int i = 0; i < particle.size(); i++) {
     Balls p = particle.get(i);
     p.display();
-    p.update();
-
+    if (runDraw == true) {
+      p.update();
+    }
     // Check for collisions with other particles
     for (int j = i + 1; j < particle.size(); j++) {
       Balls other = particle.get(j);
@@ -42,27 +52,50 @@ void draw() {
   }
   rate = frame/(millis()/1000);
   frame = frame + 1;
-  text(int (rate), 10, 10);
   //if (rate<40) {
   //  noLoop();
   //}
-  text(particle.size(), 10, 20);
-  text(radiusmouse, 10, 30);
+  fill(0);
+  textSize(15);
+  text("Rate: " + int(rate), 10, 15);
+  text("Number of Particle: " + particle.size(), 10, 30);
+  text("Radius: " + radiusmouse, 10, 45);
+  text("Speed: " + speedmouse, 10, 60);
+  text("T for Time Stop, F for Edit Mode, LEFT click to drag, RIGHT click to delete", 10, 75);
 }
 
-
+boolean editMode = false;
 void keyPressed() {
-  if ((key == 's') || (key == 'S')) {
-    radiusmouse -= 5;
+  if (((key == 'T') || (key == 't')&&runDraw == true)) {
+    runDraw = false;
+  } else if (((key == 'T') || (key == 't'))&&runDraw == false) {
+    runDraw = true;
+  }
+  if (((key == 'F') || (key == 'f')) && editMode == true) {
+    editMode = false;
+  } else if (((key == 'F') || (key == 'f')) && editMode == false) {
+    editMode = true;
   }
   if ((key == 'W') || (key == 'w')) {
-    radiusmouse += 5;
-  } 
+    radiusmouse += 10;
+  }
+  if ((key == 's') || (key == 'S')) {
+    radiusmouse -= 10;
+  }
+    if ((key == 'a') || (key == 'A')) {
+    speedmouse -= 1;
+  }
+  if ((key == 'd') || (key == 'D')) {
+    speedmouse += 1;
+  }
 }
-void mousePressed() {
-  if (mousePressed && (mouseButton == LEFT)) {
 
-    mouseCreating(radiusmouse);
+void mousePressed() {
+
+  if (mousePressed && mouseButton == LEFT) {
+    if (editMode == true) {
+      mouseCreating(radiusmouse,speedmouse);
+    }
   }
 
   if (mousePressed && (mouseButton == RIGHT)) {

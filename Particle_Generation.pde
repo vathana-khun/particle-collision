@@ -1,22 +1,22 @@
 ArrayList<Balls> particle = new ArrayList<Balls>(); // ArrayList to hold the particle
-float rectWidth = 700;
-float rectHeight = 600;
+float rectWidth = 1300;
+float rectHeight = 800;
 PVector rectTopLeft;
 PVector rectBottomRight;
 float frame = 1;
 float rate;
-int radius = 10;
-float maxSpeed = 2;
+float radius = 5;
+float maxSpeed = 1;
 float minSpeed = 1;
-int NumberOfBalls = 1;
+int NumberOfBalls = 500;
 float radiusmouse;
 void setup() {
-  size(800, 800);
+  size(1500, 1000);
   frameRate(60);
   //float voloumn = rectWidth * rectHeight;
   rectTopLeft =  new PVector(width/2 - rectWidth/2, height/2-rectHeight/2);
   rectBottomRight = new PVector(rectTopLeft.x + rectWidth, rectTopLeft.y + rectHeight);
-  CreateBalls(NumberOfBalls, radius, maxSpeed, minSpeed);
+  CreateBalls(NumberOfBalls, radius, maxSpeed, minSpeed,false);
   // Create the particle
   //Balls b2 = new Balls(20,width/2+ rectWidth - radius, height/2, -12, 0);
   //particle.add(b2);

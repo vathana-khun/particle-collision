@@ -12,7 +12,14 @@ class Balls {
   }
   //Create the Obeject
   void display() {
-    fill(velocity.x*100, 0, 255-velocity.x*100);
+    //float indicator = (maxSpeed+minSpeed)*3/4;
+    //if (velocity.x > indicator ||velocity.y> indicator){
+    //fill(255, 0, 0);
+    //}else {
+    //fill(0, 0, 255);
+    //}
+    int factor = 20;
+    fill(velocity.mag()*factor, velocity.mag()*factor/4, 200-velocity.mag()*2*factor);
     ellipse(location.x, location.y, radius*2, radius*2);
   }
   // update to make objected move
@@ -36,17 +43,21 @@ class Balls {
   }
   void checkCollision(Balls other) {
     // primitive collision checker
-    // find the distance between the current particle and the other
+    // find the distance between the current particle and the other , x2-x1
     PVector disVect = PVector.sub(other.location, location);
     float disVectMag = disVect.mag();
     float minDist = radius + other.radius;
+
     //Collision Detected:
-
     if (disVectMag < minDist) {
-
+      float correction = (disVectMag - minDist);
       PVector n = disVect.copy();
       // Create the normal unit vector of Length 1
-      PVector unitNormal = n.normalize();
+      PVector correctionVector = n.normalize().mult(correction/2);
+      other.location.sub(correctionVector);
+      location.add(correctionVector);
+
+      PVector unitNormal =  PVector.sub(other.location, location).normalize();
       PVector tangent = new PVector(-1*unitNormal.y, unitNormal.x);
 
       float velocityNormal = velocity.dot(unitNormal);
@@ -69,8 +80,6 @@ class Balls {
       PVector velocityFinal = velocityFinalNormal.add(velocityFinalTangent);
       PVector velocityFinalOther = velocityFinalNormalOther.add(velocityFinalTagentOther);
 
-
-
       //update the location or position with the new velocity
       velocity = velocityFinal;
       other.velocity = velocityFinalOther;
@@ -81,7 +90,16 @@ class Balls {
 
 
 //Create a Function that Create a certain amount of Balls
-void CreateBalls(float num, float radius, float minSpeed, float maxSpeed){
+void CreateBalls(float num, float radius, float minSpeed, float maxSpeed, boolean difMass) {
+  float minR;
+  float maxR;
+  if (difMass == true){
+    minR = radius;
+    maxR = 10;
+  }else{
+  minR = radius;
+  maxR = radius;
+  }
   if (num <= 0) return; // Avoid division by zero or negative num
   int rows = ceil(sqrt(num));
   int cols = ceil(num / rows);
@@ -92,6 +110,7 @@ void CreateBalls(float num, float radius, float minSpeed, float maxSpeed){
     for (int j = 0; j <cols; j++) {
       //float x = random(rectTopLeft .x + radius, rectBottomRight.x - radius);
       //float y = random(rectTopLeft.y + radius, rectBottomRight.y -  radius);
+      radius = random(minR, maxR);
       float x = rectTopLeft.x + (j* spacingX)+ radius;
       float y = rectTopLeft.y + (i * spacingY) + radius;
       float xspeed = random(maxSpeed, minSpeed)*randomSign();
@@ -111,7 +130,8 @@ void IncreasingBalls(Boolean Yes) {
     particle.add(b);
   }
 }
-void mouseCreating(float radiusmouse){
+void mouseCreating(float radiusmouse) {
+  if (radiusmouse > 0) {
     float x = mouseX;
     float y = mouseY;
     float xspeed = random(maxSpeed, minSpeed)*randomSign();
@@ -119,6 +139,7 @@ void mouseCreating(float radiusmouse){
     Balls b = new Balls(radiusmouse*2, x, y, xspeed, yspeed);
     particle.add(b);
   }
+}
 int randomSign() {
   return (random(1) < 0.5) ? -1 : 1;
 }

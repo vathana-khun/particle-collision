@@ -22,6 +22,7 @@ class Balls {
     //fill(0, 0, 255);
     //}
     int factor = 20;
+    //line(location.x,location.y,location.x+velocity.x*5,location.y+velocity.y*5);
     fill(velocity.mag()*factor, velocity.mag()*factor/2, 200-velocity.mag()*factor);
     ellipse(location.x, location.y, radius*2, radius*2);
   }
@@ -115,8 +116,6 @@ void CreateBalls(float num, float radius, float minSpeed, float maxSpeed, boolea
 
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j <cols; j++) {
-      //float x = random(rectTopLeft .x + radius, rectBottomRight.x - radius);
-      //float y = random(rectTopLeft.y + radius, rectBottomRight.y -  radius);
       radius = random(minR, maxR);
       float x = rectTopLeft.x + (j* spacingX)+ radius;
       float y = rectTopLeft.y + (i * spacingY) + radius;

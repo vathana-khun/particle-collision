@@ -1,6 +1,6 @@
 ArrayList<Balls> particle = new ArrayList<Balls>(); // ArrayList to hold the particle
 PVector rectTopLeft, rectBottomRight;
-float rectWidth, rectHeight, frame, rate, radius, minSpeed, maxSpeed, radiusmouse,speedmouse, g, colDamp;
+float rectWidth, rectHeight,frame, rate, radius, minSpeed, maxSpeed, radiusmouse, speedmouse, g, colDamp,energy;
 int NumberOfBalls;
 boolean difMass, increaseB, runDraw;
 
@@ -8,27 +8,27 @@ void setup() {
   size(1500, 1000);
   //Create the Size of the BOX
   rectWidth = 1300;
-  rectHeight = 800;
+  rectHeight = 500;
   frameRate(60);
   radius = 5;
   maxSpeed = 1;
   minSpeed = 0.5;
-  NumberOfBalls = 500;
-  g = 0; //gravity
-  colDamp = 1; //Collision Damping factor [0,1]
-  difMass = true; //Different mass for each particle being generated
+  NumberOfBalls = 1000;
+  g = 0.1; //gravity
+  colDamp = 0.95; //Collision Damping factor [0,1]
+  difMass = false; //Different mass for each particle being generated
   increaseB = false; //Increase the amount of particle over time.
   //Rectangle Cordinate
   rectTopLeft =  new PVector(width/2 - rectWidth/2, height/2-rectHeight/2);
   rectBottomRight = new PVector(rectTopLeft.x + rectWidth, rectTopLeft.y + rectHeight);
   //Created the particle itself
   CreateBalls(NumberOfBalls, radius, maxSpeed, minSpeed, difMass);
-  frame = 1;
+  
   runDraw = true;
   radiusmouse = 5;
   speedmouse = 0;
 }
-
+float vs, vrms,avgKE;
 void draw() {
   background(255);
   noFill();
@@ -40,6 +40,7 @@ void draw() {
 
   for (int i = 0; i < particle.size(); i++) {
     Balls p = particle.get(i);
+     vs += p.velocity.mag()*p.velocity.mag(); 
     p.display();
     if (runDraw == true) {
       p.update();
@@ -50,8 +51,13 @@ void draw() {
       p.checkCollision(other);
     }
   }
+  vrms = sqrt(vs/particle.size());
+  avgKE = 0.5 *radius*0.1*vrms;
+  energy = avgKE*particle.size();
+  frame = frameCount +1;
   rate = frame/(millis()/1000);
-  frame = frame + 1;
+  vs = 0;
+
   //if (rate<40) {
   //  noLoop();
   //}
@@ -62,6 +68,8 @@ void draw() {
   text("Radius: " + radiusmouse, 10, 45);
   text("Speed: " + speedmouse, 10, 60);
   text("T for Time Stop, F for Edit Mode, LEFT click to drag, RIGHT click to delete", 10, 75);
+  text("TOTAL ENERGY: " + energy,10,90);
+
 }
 
 boolean editMode = false;
@@ -82,7 +90,7 @@ void keyPressed() {
   if ((key == 's') || (key == 'S')) {
     radiusmouse -= 10;
   }
-    if ((key == 'a') || (key == 'A')) {
+  if ((key == 'a') || (key == 'A')) {
     speedmouse -= 1;
   }
   if ((key == 'd') || (key == 'D')) {
@@ -94,7 +102,7 @@ void mousePressed() {
 
   if (mousePressed && mouseButton == LEFT) {
     if (editMode == true) {
-      mouseCreating(radiusmouse,speedmouse);
+      mouseCreating(radiusmouse, speedmouse);
     }
   }
 
